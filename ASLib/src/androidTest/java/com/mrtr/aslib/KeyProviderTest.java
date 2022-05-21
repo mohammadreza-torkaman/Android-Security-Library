@@ -16,11 +16,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * This test class is responsible for testing {@link KeyProvider} functionality
  *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * @author Mohammadreza-Torkaman
+ * @version 1.0
+ * @since 1.0
  */
 @RunWith(AndroidJUnit4.class)
 public class KeyProviderTest {
@@ -35,23 +38,17 @@ public class KeyProviderTest {
     Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
     try {
 
-      firstKeyProvider = KeyProvider.getInstance(appContext, ALIAS_1);
-      secondKeyProvider = KeyProvider.getInstance(appContext, ALIAS_2);
-      secondKeyProvider.remove();
-      secondKeyProvider = KeyProvider.getInstance(appContext, ALIAS_2);
+      firstKeyProvider = KeyProvider.provide(appContext, ALIAS_1);
+      secondKeyProvider = KeyProvider.provide(appContext, ALIAS_2);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   @Test
-  public void isNull_firstKeyProvider() {
+  public void isNotNull_KeyProvider() {
     assertNotNull(firstKeyProvider);
     assertNotNull(firstKeyProvider.getKey());
-  }
-
-  @Test
-  public void isNull_secondKeyProvider() {
     assertNotNull(secondKeyProvider);
     assertNotNull(secondKeyProvider.getKey());
   }
@@ -64,8 +61,9 @@ public class KeyProviderTest {
   @Test
   public void isRandom_encryptedData() {
     try {
-      String firstEncrypted = firstKeyProvider.encrypt("this is a test");
-      String secondEncrypted = firstKeyProvider.encrypt("this is a test");
+      final String testVariable = "this is a test";
+      String firstEncrypted = firstKeyProvider.encrypt(testVariable);
+      String secondEncrypted = firstKeyProvider.encrypt(testVariable);
       assertNotEquals(firstEncrypted, secondEncrypted);
     } catch (Exception e) {
       e.printStackTrace();
@@ -74,14 +72,20 @@ public class KeyProviderTest {
   }
 
   @Test
-  public void canEncrypt() {
+  public void canEncrypt_keyProviders() {
     try {
-      String firstEncrypted = firstKeyProvider.encrypt("this is a test");
-      String secondEncrypted = secondKeyProvider.encrypt("this is a test");
+      final String testVariable = "this is a test";
+      String firstEncrypted = firstKeyProvider.encrypt(testVariable);
+      byte[] firstBytesEncrypted = firstKeyProvider.encrypt(testVariable.getBytes());
+      String secondEncrypted = secondKeyProvider.encrypt(testVariable);
+      byte[] secondBytesEncrypted = secondKeyProvider.encrypt(testVariable.getBytes());
       assertNotNull(firstEncrypted);
       assertNotNull(secondEncrypted);
+      assertNotEquals(0, firstBytesEncrypted.length);
+      assertNotEquals(0, secondBytesEncrypted.length);
       assertFalse(firstEncrypted.isEmpty());
       assertFalse(secondEncrypted.isEmpty());
+
     } catch (Exception e) {
       e.printStackTrace();
       Assert.fail(e.getMessage());
@@ -89,21 +93,68 @@ public class KeyProviderTest {
   }
 
   @Test
-  public void canDecrypt() {
+  public void canDecrypt_keyProviders() {
     try {
       final String testVariable = "this is a test";
+
       String firstEncrypted = firstKeyProvider.encrypt(testVariable);
       String firstDecrypted = firstKeyProvider.decrypt(firstEncrypted);
+
+      byte[] firstEncryptedBytes = firstKeyProvider.encrypt(testVariable.getBytes());
+      byte[] firstDecryptBytes = firstKeyProvider.decrypt(firstEncryptedBytes);
 
       String secondEncrypted = secondKeyProvider.encrypt(testVariable);
       String secondDecrypted = secondKeyProvider.decrypt(secondEncrypted);
 
+      byte[] secondEncryptedBytes = secondKeyProvider.encrypt(testVariable.getBytes());
+      byte[] secondDecryptedBytes = secondKeyProvider.decrypt(secondEncryptedBytes);
+
       assertEquals(testVariable, firstDecrypted);
       assertEquals(testVariable, secondDecrypted);
+      assertNotEquals(0, firstDecryptBytes.length);
+      assertNotEquals(0, secondDecryptedBytes.length);
 
     } catch (Exception e) {
       e.printStackTrace();
       Assert.fail(e.getMessage());
     }
+  }
+
+  @Test
+  public void canRemove_keyProviders() {
+    Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+    final String testAlias = "CAN_REMOVE_TEST_1";
+    final String notExistAlias = "CAN_REMOVE_TEST_2";
+    try {
+      KeyProvider.provide(appContext, testAlias);
+      boolean testAliasRemoved1 = KeyProvider.removeKey(appContext, testAlias);
+      KeyProvider instance = KeyProvider.provide(appContext, testAlias);
+      boolean testAliasRemoved2 = KeyProvider.removeKey(appContext, instance);
+      boolean notExistAliasRemoved = KeyProvider.removeKey(appContext, notExistAlias);
+      assertTrue(testAliasRemoved1);
+      assertTrue(testAliasRemoved2);
+      assertTrue(notExistAliasRemoved);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assert.fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void keyExists_keyProviders() {
+    Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+    String existsCheckAlias = "EXIST_KEY";
+    String notExistsCheckAlias = "NOT_EXIST_KEY";
+    try {
+      KeyProvider.provide(context, existsCheckAlias);
+      boolean exists = KeyProvider.keyExists(existsCheckAlias);
+      boolean notExists = KeyProvider.keyExists(notExistsCheckAlias);
+      assertTrue(exists);
+      assertFalse(notExists);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assert.fail(e.getMessage());
+    }
+
   }
 }
