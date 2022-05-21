@@ -1,15 +1,13 @@
 package com.mrtr.aslib;
 
-import android.content.Context;
-
 import com.mrtr.aslib.core.encoders.Base58;
-import com.mrtr.aslib.core.keystore.KeyProvider;
 
 import org.junit.Test;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class Base58UnitTest {
@@ -21,7 +19,10 @@ public class Base58UnitTest {
 
   @Test
   public void decodeBase58() {
-    assertEquals("Hi there.", Base58.encode("vTaMKLSeLWR3"));
+    assertEquals(
+      "Hi there.",
+      new String(Base58.decode("vTaMKLSeLWR3"), StandardCharsets.UTF_8)
+    );
     assertEquals(0, Base58.decode("").length);
   }
 }
