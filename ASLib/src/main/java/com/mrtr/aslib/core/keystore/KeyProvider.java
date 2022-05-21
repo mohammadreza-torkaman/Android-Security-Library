@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
-import android.preference.Preference;
 import android.security.KeyPairGeneratorSpec;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
@@ -36,13 +35,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.prefs.Preferences;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
@@ -59,11 +55,14 @@ import androidx.annotation.RequiresApi;
  * <p>
  * {@link #provide(Context, String)} gives you the ability to create a key with an specific alias or retrieve it if it's already created.<br/>
  * <p>
- * You can remove an specific key using {@link #removeKey(Context, String)} or {@link #removeKey(Context, KeyProvider)}.<br/>
+ * <li>You can remove an specific key using {@link #removeKey(Context, String)} or {@link #removeKey(Context, KeyProvider)} methods.<br/>
  * <p>
- * You can encrypted using {@link #encrypt(String)} or {@link #encrypt(byte[])} methods.<br/>
- * Encryption algorithm is <b>AES/GCM/NoPadding</b>.<br/>
- * Decryption can be performed using {@link #decrypt(byte[])} or {@link #decrypt(String)}.<br/>
+ * <li>You can encrypted using {@link #encrypt(String)} or {@link #encrypt(byte[])} methods.<br/>
+ * <p>
+ * <li>Encryption algorithm is <b>AES/GCM/NoPadding</b>.<br/>
+ * <p>
+ * <li>Decryption can be performed using {@link #decrypt(byte[])} or {@link #decrypt(String)}.<br/>
+ * <p>
  *
  * @author Mohammadreza-Torkaman
  * @version 1.0
@@ -139,13 +138,12 @@ public class KeyProvider {
     throws KeyStoreException, NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException,
     NoSuchPaddingException, InvalidKeyException, UnrecoverableEntryException, IOException {
 
-    //this is for rtl issue date time for creating key
-    //we change locale to english and then restore it
-    // Set English locale as default (workaround)
+    //We change locale to english and then restore it because of RTL based languages date time issue for creating key
+    //Set English locale as default to fix the problem
     Locale initialLocale = Locale.getDefault();
     setLocale(context, Locale.ENGLISH);
 
-    // Generate the RSA key pairs
+    // Generating the RSA key pairs
     if (!keyStore.containsAlias(RSAAlias)) {
       // Generate an RSA key pair for encrypting AES key
       Calendar start = Calendar.getInstance();
@@ -409,9 +407,6 @@ public class KeyProvider {
     }
   }
 
-  /**
-   * Sets default locale.
-   */
   private void setLocale(Context context, Locale locale) {
     Locale.setDefault(locale);
     Resources resources = context.getResources();
