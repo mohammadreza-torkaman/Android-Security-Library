@@ -78,21 +78,20 @@ class ROT {
                     rotated = current
                 }
             }
-
             return rotated
 
         }
 
         private fun getCharType(c: Char): Int {
             return when {
-                (c >= LOWER_A_CHAR && c <= LOWER_Z_CHAR) -> LOWER_A_Z_TYPE
-                (c >= UPPER_A_CHAR && c <= UPPER_Z_CHAR) -> UPPER_A_Z_TYPE
+                (c in LOWER_A_CHAR..LOWER_Z_CHAR) -> LOWER_A_Z_TYPE
+                (c in UPPER_A_CHAR..UPPER_Z_CHAR) -> UPPER_A_Z_TYPE
                 else -> NOT_LETTER_TYPE
             }
         }
 
         private fun isNumeric(c: Char): Boolean {
-            return c >= ZERO_CHAR && c <= NINE_CHAR
+            return c in ZERO_CHAR..NINE_CHAR
         }
 
     }
