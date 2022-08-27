@@ -12,6 +12,8 @@ ASL is a opensource android library to help android developers to solve differen
 - Supports different encoding like **ROTn** and **Base58** (more encoding will be added)
 - A key-value based **Secure Storage** with the aim of storing improtant data (uses Room DB and Key Provider) 
 
+## Documentation
+* [See project documentation here ](https://github.com/mohammadreza-torkaman/Android-Security-Library/wiki/Documentation)
 
 
 ## Development
